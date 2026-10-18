@@ -1,0 +1,11 @@
+{
+  "source": "https://en.wikipedia.org/wiki/List_of_S%26P_500_companies",
+  "retrieved_at_utc": "2026-10-18T01:00:08+00:00",
+  "constituents": 503,
+  "symbol_convention": "Exchange spelling with '.' for share classes (e.g. BRK.B); Yahoo Finance uses '-' (BRK-B).",
+  "class_share_symbols": [
+    "BF.B",
+    "BRK.B"
+  ],
+  "note": "Current constituents applied to 2009-2020 history: survivorship bias."
+}
