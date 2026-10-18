@@ -1,0 +1,185 @@
+{
+  "window": [
+    "2008-06-01",
+    "2020-07-15"
+  ],
+  "nyse_trading_days": 3051,
+  "sec_shares_enabled": true,
+  "tickers": {
+    "^sp500": {
+      "first_date": "2008-06-02",
+      "last_date": "2020-07-14",
+      "rows": 3051,
+      "missing_nyse_days_after_first_date": 0,
+      "extra_non_nyse_days": 0,
+      "splits_in_or_after_window": {}
+    },
+    "AAPL": {
+      "first_date": "2008-06-02",
+      "last_date": "2020-07-14",
+      "rows": 3051,
+      "missing_nyse_days_after_first_date": 0,
+      "extra_non_nyse_days": 0,
+      "splits_in_or_after_window": {
+        "2014-06-09": 7.0,
+        "2020-08-31": 4.0
+      },
+      "sec_shares_rejected_implausible": 0,
+      "yf_shares_coverage": 0.388,
+      "yf_shares_first_date": "2015-10-28",
+      "sec_shares_coverage": 0.906,
+      "sec_shares_first_date": "2009-07-22",
+      "ratio_coverage": 1.0,
+      "ratio_first_date": "2008-06-02",
+      "ratio_vs_yf_shares_rel_error": {
+        "median": -0.294,
+        "min": -0.346,
+        "max": -0.155
+      },
+      "cap_source_share": {
+        "sec_shares": 0.906,
+        "ratio": 0.094
+      }
+    },
+    "JPM": {
+      "first_date": "2008-06-02",
+      "last_date": "2020-07-14",
+      "rows": 3051,
+      "missing_nyse_days_after_first_date": 0,
+      "extra_non_nyse_days": 0,
+      "splits_in_or_after_window": {},
+      "sec_shares_rejected_implausible": 0,
+      "yf_shares_coverage": 0.387,
+      "yf_shares_first_date": "2015-11-02",
+      "sec_shares_coverage": 0.902,
+      "sec_shares_first_date": "2009-08-10",
+      "ratio_coverage": 1.0,
+      "ratio_first_date": "2008-06-02",
+      "ratio_vs_yf_shares_rel_error": {
+        "median": -0.245,
+        "min": -0.278,
+        "max": -0.089
+      },
+      "cap_source_share": {
+        "sec_shares": 0.902,
+        "ratio": 0.098
+      }
+    },
+    "KO": {
+      "first_date": "2008-06-02",
+      "last_date": "2020-07-14",
+      "rows": 3051,
+      "missing_nyse_days_after_first_date": 0,
+      "extra_non_nyse_days": 0,
+      "splits_in_or_after_window": {
+        "2012-08-13": 2.0
+      },
+      "sec_shares_rejected_implausible": 0,
+      "yf_shares_coverage": 0.388,
+      "yf_shares_first_date": "2015-10-28",
+      "sec_shares_coverage": 0.904,
+      "sec_shares_first_date": "2009-07-30",
+      "ratio_coverage": 1.0,
+      "ratio_first_date": "2008-06-02",
+      "ratio_vs_yf_shares_rel_error": {
+        "median": 0.006,
+        "min": -0.02,
+        "max": 0.032
+      },
+      "cap_source_share": {
+        "sec_shares": 0.904,
+        "ratio": 0.096
+      }
+    },
+    "NVDA": {
+      "first_date": "2008-06-02",
+      "last_date": "2020-07-14",
+      "rows": 3051,
+      "missing_nyse_days_after_first_date": 0,
+      "extra_non_nyse_days": 0,
+      "splits_in_or_after_window": {
+        "2021-07-20": 4.0,
+        "2024-06-10": 10.0
+      },
+      "sec_shares_rejected_implausible": 0,
+      "yf_shares_coverage": 0.383,
+      "yf_shares_first_date": "2015-11-18",
+      "sec_shares_coverage": 0.899,
+      "sec_shares_first_date": "2009-08-20",
+      "ratio_coverage": 1.0,
+      "ratio_first_date": "2008-06-02",
+      "ratio_vs_yf_shares_rel_error": {
+        "median": -0.005,
+        "min": -0.196,
+        "max": 0.13
+      },
+      "cap_source_share": {
+        "sec_shares": 0.899,
+        "ratio": 0.101
+      }
+    },
+    "BRK.B": {
+      "first_date": "2008-06-02",
+      "last_date": "2020-07-14",
+      "rows": 3051,
+      "missing_nyse_days_after_first_date": 0,
+      "extra_non_nyse_days": 0,
+      "splits_in_or_after_window": {
+        "2010-01-21": 50.0
+      },
+      "sec_shares_rejected_implausible": 2688,
+      "yf_shares_coverage": 0.386,
+      "yf_shares_first_date": "2015-11-06",
+      "sec_shares_coverage": 0.0,
+      "sec_shares_first_date": null,
+      "ratio_coverage": 1.0,
+      "ratio_first_date": "2008-06-02",
+      "ratio_vs_yf_shares_rel_error": {
+        "median": -0.131,
+        "min": -0.151,
+        "max": -0.101
+      },
+      "cap_source_share": {
+        "ratio": 0.614,
+        "yf_shares": 0.386
+      }
+    },
+    "META": {
+      "first_date": "2012-05-18",
+      "last_date": "2020-07-14",
+      "rows": 2051,
+      "missing_nyse_days_after_first_date": 0,
+      "extra_non_nyse_days": 0,
+      "splits_in_or_after_window": {},
+      "sec_shares_rejected_implausible": 0,
+      "yf_shares_coverage": 0.0,
+      "yf_shares_first_date": null,
+      "sec_shares_coverage": 0.0,
+      "sec_shares_first_date": null,
+      "ratio_coverage": 1.0,
+      "ratio_first_date": "2012-05-18",
+      "cap_source_share": {
+        "ratio": 1.0
+      }
+    },
+    "VTRS": {
+      "first_date": "2008-06-02",
+      "last_date": "2020-07-14",
+      "rows": 3051,
+      "missing_nyse_days_after_first_date": 0,
+      "extra_non_nyse_days": 0,
+      "splits_in_or_after_window": {},
+      "sec_shares_rejected_implausible": 47,
+      "yf_shares_coverage": 0.0,
+      "yf_shares_first_date": null,
+      "sec_shares_coverage": 0.0,
+      "sec_shares_first_date": null,
+      "ratio_coverage": 1.0,
+      "ratio_first_date": "2008-06-02",
+      "cap_source_share": {
+        "ratio": 1.0
+      }
+    }
+  },
+  "aapl_2018_08_02_market_cap": 1001678350192.0471
+}
