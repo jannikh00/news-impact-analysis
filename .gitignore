@@ -1,2 +1,24 @@
-# Report drafts stay local until the report has been submitted and graded
-docs/report/
+# Docs (report drafts, feasibility notes) stay local for now
+docs/
+
+# Environment
+.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+.DS_Store
+
+# Supplied news archive and large generated datasets (see docs/data-feasibility.md)
+pipeline/datasets/news_datasets.zip
+pipeline/datasets/analyst_ratings.csv
+pipeline/datasets/headlines.csv
+pipeline/datasets/news.csv
+pipeline/datasets/historical_prices.csv
+pipeline/datasets/historical_impacts_values.csv
+pipeline/datasets/news_dtm_*.csv
+pipeline/datasets/news_tfidf_*.csv
+
+# Raw provider price/cap extracts from feasibility prototypes
+results/feasibility/prototype_*.csv
+results/feasibility/cap_methods_*.csv
+results/feasibility/*.log
