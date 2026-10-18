@@ -1,0 +1,3 @@
+date,symbol,open,high,low,close,adj_close,volume,market_cap,daily_return,daily_volatility,market_return,alpha,beta,AR,CAR,Z_CAR,IIS,MIV
+1/1/2023,AAPL,100,101,99,100.5,100.5,1000000,4860000,1.2,2.1,0.5,1.1,1.1,0.5,3.54,1,2,500
+1/2/2023,AAPL,100,102,98,101.5,101.5,1200000,4860000,-1.1,2.1,0.5,1.1,1.15,-0.7,3,-1,-1,-200
