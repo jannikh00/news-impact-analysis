@@ -1,0 +1,276 @@
+{
+  "offset_evidence": {
+    "timed_rows": 55987,
+    "timed_rows_per_year": {
+      "2011": 760,
+      "2012": 1187,
+      "2013": 1240,
+      "2014": 1189,
+      "2015": 3695,
+      "2016": 4223,
+      "2017": 3581,
+      "2018": 5395,
+      "2019": 6325,
+      "2020": 28392
+    },
+    "recurring_pieces": {
+      "Biggest Movers From": {
+        "n": 1888,
+        "median_wall_hour_edt": 5.1,
+        "median_wall_hour_est": 6.0
+      },
+      "Stocks Moving In ... Pre-Market": {
+        "n": 1001,
+        "median_wall_hour_edt": 7.67,
+        "median_wall_hour_est": 9.25
+      },
+      "Mid-Day Session": {
+        "n": 1190,
+        "median_wall_hour_edt": 12.58,
+        "median_wall_hour_est": 13.4
+      },
+      "Stocks That Hit 52-Week Highs": {
+        "n": 2315,
+        "median_wall_hour_edt": 10.63,
+        "median_wall_hour_est": 11.53
+      },
+      "After-Hours": {
+        "n": 91,
+        "median_wall_hour_edt": 17.32,
+        "median_wall_hour_est": 18.2
+      }
+    }
+  },
+  "alias_coverage": {
+    "aliases": [
+      {
+        "news_symbol": "FB",
+        "symbol": "META",
+        "target_in_snapshot": true,
+        "news_rows": 433
+      },
+      {
+        "news_symbol": "ANTM",
+        "symbol": "ELV",
+        "target_in_snapshot": true,
+        "news_rows": 2558
+      },
+      {
+        "news_symbol": "JEC",
+        "symbol": "J",
+        "target_in_snapshot": true,
+        "news_rows": 1878
+      },
+      {
+        "news_symbol": "HRS",
+        "symbol": "LHX",
+        "target_in_snapshot": true,
+        "news_rows": 1507
+      },
+      {
+        "news_symbol": "TMK",
+        "symbol": "GL",
+        "target_in_snapshot": true,
+        "news_rows": 677
+      },
+      {
+        "news_symbol": "FLT",
+        "symbol": "CPAY",
+        "target_in_snapshot": true,
+        "news_rows": 1420
+      },
+      {
+        "news_symbol": "BBT",
+        "symbol": "TFC",
+        "target_in_snapshot": true,
+        "news_rows": 2427
+      },
+      {
+        "news_symbol": "MYL",
+        "symbol": "VTRS",
+        "target_in_snapshot": true,
+        "news_rows": 4446
+      },
+      {
+        "news_symbol": "MHFI",
+        "symbol": "SPGI",
+        "target_in_snapshot": true,
+        "news_rows": 334
+      },
+      {
+        "news_symbol": "HCN",
+        "symbol": "WELL",
+        "target_in_snapshot": true,
+        "news_rows": 1151
+      },
+      {
+        "news_symbol": "RE",
+        "symbol": "EG",
+        "target_in_snapshot": true,
+        "news_rows": 835
+      },
+      {
+        "news_symbol": "PKI",
+        "symbol": "RVTY",
+        "target_in_snapshot": true,
+        "news_rows": 795
+      },
+      {
+        "news_symbol": "SYMC",
+        "symbol": "GEN",
+        "target_in_snapshot": true,
+        "news_rows": 2708
+      },
+      {
+        "news_symbol": "PCLN",
+        "symbol": "BKNG",
+        "target_in_snapshot": true,
+        "news_rows": 1670
+      },
+      {
+        "news_symbol": "COH",
+        "symbol": "TPR",
+        "target_in_snapshot": true,
+        "news_rows": 2723
+      },
+      {
+        "news_symbol": "ABC",
+        "symbol": "COR",
+        "target_in_snapshot": true,
+        "news_rows": 722
+      },
+      {
+        "news_symbol": "HCP",
+        "symbol": "DOC",
+        "target_in_snapshot": true,
+        "news_rows": 2026
+      }
+    ],
+    "universe_rows_raw": 646357,
+    "universe_rows_with_aliases": 674667,
+    "universe_tickers_with_news": 398,
+    "universe_tickers_without_news": [
+      "ABNB",
+      "ABT",
+      "AEP",
+      "AMCR",
+      "APA",
+      "APD",
+      "APTV",
+      "ATO",
+      "AXON",
+      "BALL",
+      "BE",
+      "BKR",
+      "CAH",
+      "CARR",
+      "CB",
+      "CBOE",
+      "CBRE",
+      "CEG",
+      "COIN",
+      "COST",
+      "CRWD",
+      "CVNA",
+      "CVX",
+      "DASH",
+      "DDOG",
+      "DELL",
+      "ECHO",
+      "ECL",
+      "EIX",
+      "ES",
+      "EVRG",
+      "EXC",
+      "FDXF",
+      "FERG",
+      "FFIV",
+      "FRT",
+      "FTV",
+      "GDDY",
+      "GE",
+      "GEHC",
+      "GEV",
+      "GLW",
+      "GS",
+      "HII",
+      "HON",
+      "HONA",
+      "HOOD",
+      "HPE",
+      "HRL",
+      "HST",
+      "HUBB",
+      "HWM",
+      "INVH",
+      "IQV",
+      "IRM",
+      "ISRG",
+      "JKHY",
+      "KDP",
+      "KHC",
+      "KVUE",
+      "LIN",
+      "LITE",
+      "MGM",
+      "MRNA",
+      "MRSH",
+      "MSFT",
+      "NKE",
+      "NUE",
+      "ODFL",
+      "ON",
+      "OTIS",
+      "PCAR",
+      "PLD",
+      "PLTR",
+      "PM",
+      "PNW",
+      "PSX",
+      "PYPL",
+      "RDDT",
+      "ROST",
+      "RTX",
+      "SKYD",
+      "SMCI",
+      "SNA",
+      "SOLV",
+      "STT",
+      "SW",
+      "SWKS",
+      "SYF",
+      "TDG",
+      "TER",
+      "TKO",
+      "TT",
+      "TTWO",
+      "TWLO",
+      "UBER",
+      "VICI",
+      "VLTO",
+      "VMRK",
+      "VRT",
+      "VST",
+      "VYLR",
+      "WY",
+      "XYZ",
+      "ZBH"
+    ],
+    "exact_time_share": 0.0059,
+    "rows_per_year": {
+      "2009": 3167,
+      "2010": 23225,
+      "2011": 40896,
+      "2012": 50778,
+      "2013": 42675,
+      "2014": 43933,
+      "2015": 67050,
+      "2016": 68151,
+      "2017": 62461,
+      "2018": 95062,
+      "2019": 116605,
+      "2020": 60664
+    },
+    "company_days": 334417
+  }
+}
