@@ -7,6 +7,8 @@ Reads the manifests and tables written by prepare_data.py and pipeline scripts
 - coverage_by_symbol.csv   per company: articles, price coverage, events per partition,
                            market-cap source of its sample events
 - cap_source_in_sample.csv which method produced the pre-event cap behind each MIV
+- cap_review.csv           stretches where a company's implied share count is >3x off its
+                           median (capital events or share-data errors; reviewed by hand)
 - split_manifest.json      sampling_manifest.json plus the audit totals
 
 Usage:
@@ -22,10 +24,11 @@ import pandas as pd
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "pipeline"))
-from utils import DEFAULT_DATA_DIR, DEFAULT_OUT_DIR, write_json  # noqa: E402
+from utils import DEFAULT_DATA_DIR, DEFAULT_OUT_DIR, MARKET_SYMBOL, write_json  # noqa: E402
 
 RESULTS = ROOT / "results" / "full_sample"
 SAMPLE = ["inner_train", "validation", "test"]
+CAP_REVIEW_FACTOR = 3.0
 
 
 def waterfall(prep, impacts, sampling):
@@ -74,6 +77,20 @@ def event_cap_sources(events, sources, prices):
     return events.merge(lookup[["symbol", "event_date", "cap_source"]], on=["symbol", "event_date"], how="left")
 
 
+def implied_share_outliers(prices, factor=CAP_REVIEW_FACTOR):
+    """Stretches where a company's implied share count (market_cap / close) is more than
+    `factor` away from its own median: either genuine capital events (mergers, spin-offs,
+    recapitalizations) or unit errors in the share data, to be reviewed by hand."""
+    p = prices.dropna(subset=["market_cap"]).sort_values(["symbol", "date"]).copy()
+    p["ratio"] = (p["market_cap"] / p["close"]) / (p["market_cap"] / p["close"]).groupby(p["symbol"]).transform("median")
+    p["flag"] = (p["ratio"] > factor) | (p["ratio"] < 1 / factor)
+    p["run"] = (p["flag"] != p.groupby("symbol")["flag"].shift()).groupby(p["symbol"]).cumsum()
+    runs = p[p["flag"]].groupby(["symbol", "run"]).agg(start=("date", "first"), end=("date", "last"),
+                                                       trading_days=("date", "size"),
+                                                       median_ratio=("ratio", "median"))
+    return runs.reset_index().drop(columns="run")
+
+
 def main():
     ap = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     ap.add_argument("--data-dir", type=Path, default=DEFAULT_DATA_DIR)
@@ -84,7 +101,7 @@ def main():
 
     events = pd.read_csv(args.out_dir / "artifacts" / "events.csv", parse_dates=["event_date"],
                          usecols=["symbol", "event_date", "partition", "n_headlines", "mixed_session"])
-    prices = pd.read_csv(args.data_dir / "historical_prices.csv", usecols=["date", "symbol"])
+    prices = pd.read_csv(args.data_dir / "historical_prices.csv", usecols=["date", "symbol", "close", "market_cap"])
     sources = pd.read_csv(args.data_dir / "market_cap_sources.csv")
     news = pd.read_csv(args.data_dir / "news.csv", usecols=["symbol"])
     names = pd.read_csv(args.data_dir / "sp500.csv").set_index("symbol")["company_name"]
@@ -116,6 +133,8 @@ def main():
     coverage["sample_events"] = coverage[SAMPLE].fillna(0).sum(axis=1).astype(int)
     coverage = coverage.rename_axis("symbol").sort_values("sample_events", ascending=False)
     coverage.to_csv(RESULTS / "coverage_by_symbol.csv")
+    outliers = implied_share_outliers(prices[prices["symbol"] != MARKET_SYMBOL])
+    outliers.to_csv(RESULTS / "cap_review.csv", index=False)
 
     summary = {
         "symbols_in_snapshot": int(len(names)),
@@ -128,6 +147,10 @@ def main():
         "sample_mixed_session_events": int(sample["mixed_session"].sum()),
         "sample_median_headlines_per_event": float(sample["n_headlines"].median()),
         "sample_iis_distribution": None,
+        "cap_review": {"factor": CAP_REVIEW_FACTOR, "stretches": int(len(outliers)),
+                       "symbols": sorted(outliers["symbol"].unique()),
+                       "max_ratio": float(max(outliers["median_ratio"].max(), 1 / outliers["median_ratio"].min()))
+                       if len(outliers) else None},
     }
     test = pd.read_csv(args.data_dir / "news_dtm_test.csv", usecols=["symbol", "IIS"])
     train = pd.read_csv(args.data_dir / "news_dtm_train.csv", usecols=["symbol", "IIS"])

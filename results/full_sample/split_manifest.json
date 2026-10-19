@@ -97,9 +97,9 @@
     ],
     "sample_events": 200665,
     "sample_cap_source_share": {
-      "sec_shares": 0.9328,
+      "sec_shares": 0.9325,
       "yf_shares": 0.034,
-      "ratio": 0.0332
+      "ratio": 0.0334
     },
     "sample_mixed_session_events": 2,
     "sample_median_headlines_per_event": 1.0,
@@ -122,6 +122,25 @@
         "2": 0.03,
         "3": 0.0178
       }
+    },
+    "cap_review": {
+      "factor": 3.0,
+      "stretches": 13,
+      "symbols": [
+        "AIG",
+        "DD",
+        "DVA",
+        "EBAY",
+        "FANG",
+        "FOXA",
+        "HPQ",
+        "IFF",
+        "O",
+        "PCG",
+        "TMUS",
+        "TRGP"
+      ],
+      "max_ratio": 7.2522063846882
     },
     "top10_test_companies": {
       "AVGO": 220,

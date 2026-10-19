@@ -2,7 +2,7 @@ import re
 
 import pandas as pd
 
-from prepare_data import IRRELEVANT_HEADLINE, excluded_rows, load_cik_overrides
+from prepare_data import IRRELEVANT_HEADLINE, excluded_rows, load_cik_overrides, unit_error_positions
 
 EXCLUSIONS = pd.DataFrame({"news_symbol": ["P", "COR", "DOW"], "start": [None, None, "2019-01-01"],
                            "end": [None, "2023-08-29", "2019-04-01"], "reason": ["", "", ""]})
@@ -52,6 +52,13 @@ def test_sec_filing_outliers_dropped_but_step_changes_kept():
     assert s.loc["2012-09-03"] == 101e6          # typo filing ignored, previous count carried
     assert s.loc["2013-03-01"] == 500e6          # step change kept
     assert s.loc["2013-09-03"] == 505e6          # placeholder ignored
+
+
+def test_repeated_unit_errors_dropped():
+    # three consecutive filings in thousands of shares confirm each other, so only the median guard catches them
+    vals = [200e6, 201e6, 202e6, 202e9, 202e9, 198e9, 199e6, 198e6, 1, 197e6]
+    assert unit_error_positions(vals) == [3, 4, 5, 8]
+    assert unit_error_positions([100e6, 400e6, 1.5e9]) == []  # genuine large changes stay
 
 
 def test_sec_split_restatement_by_as_of_date():

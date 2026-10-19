@@ -49,6 +49,10 @@ INDEX_YAHOO = "^GSPC"
 # neighbouring filings (typos, counts in millions, placeholders, split-timing errors), worst
 # first; genuine step changes survive because the following filings confirm the new level.
 SEC_FILING_OUTLIER = 2.0
+# Before that, drop counts more than 100x from the company's median (unit errors that repeat over
+# several filings). In the cached filings, flagged counts are all >= ~480x or <= 1/1000 of the
+# median, while every other count stays within ~20x of it.
+SEC_UNIT_ERROR = 100.0
 # Per company: reject SEC entirely only when its cap disagrees structurally with BOTH references,
 # Yahoo's share counts and the ratio fallback over the window's last year, where that fallback
 # drifts least (e.g. BRK reports only Class A). Either reference alone can be wrong: Yahoo's share
@@ -233,6 +237,18 @@ def spike_positions(values, factor=SEC_FILING_OUTLIER):
     return dropped
 
 
+def unit_error_positions(values, factor=SEC_UNIT_ERROR):
+    """Positions of counts more than `factor` away from the company's median count.
+
+    Catches runs of consecutive bad filings that confirm each other and so pass the
+    spike check, e.g. counts reported in thousands of shares (GRMN 2016-2018, FTNT 2014),
+    millions (AJG 2020) or a placeholder of 1 (ICE 2013).
+    """
+    v = np.asarray(values, dtype=float)
+    ratio = v / np.median(v)
+    return list(np.flatnonzero((ratio > factor) | (ratio < 1 / factor)))
+
+
 def sec_shares(filings, splits, index):
     """SEC cover-page share counts on today's split basis, effective from their filing date.
 
@@ -248,10 +264,12 @@ def sec_shares(filings, splits, index):
     df = df.drop_duplicates(["accn", "end", "val"]).groupby(["filed", "accn", "end"])["val"].sum().reset_index()
     df["val"] = df["val"] * future_split_factor(pd.to_datetime(df["end"]), splits)
     df = df.sort_values("filed").reset_index(drop=True)
+    unit_errors = unit_error_positions(df["val"])
+    df = df.drop(index=unit_errors).reset_index(drop=True)
     spikes = spike_positions(df["val"])
     df = df.drop(index=spikes)
     s = df.assign(filed=pd.to_datetime(df["filed"])).groupby("filed")["val"].last()
-    return s.sort_index().reindex(index, method="ffill"), len(spikes)
+    return s.sort_index().reindex(index, method="ffill"), len(unit_errors) + len(spikes)
 
 
 def check_sec_against_reference(caps):

@@ -1,4 +1,4 @@
 partition,ratio,sec_shares,yf_shares
-inner_train,6655,134474,3272
+inner_train,6706,134423,3272
 test,0,37712,2483
 validation,0,14993,1076
