@@ -2,7 +2,8 @@ import importlib.util
 import sys
 from pathlib import Path
 
-PIPELINE = Path(__file__).resolve().parents[1] / "pipeline"
+ROOT = Path(__file__).resolve().parents[1]
+PIPELINE = ROOT / "pipeline" if (ROOT / "pipeline").exists() else ROOT  # repo layout, or the course's Assignment_3/
 sys.path.insert(0, str(PIPELINE))
 
 

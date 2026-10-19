@@ -18,8 +18,9 @@ import numpy as np
 import pandas as pd
 
 ROOT = Path(__file__).resolve().parents[1]
-DEFAULT_ZIP = ROOT / "pipeline" / "datasets" / "news_datasets.zip"
-DEFAULT_SP500 = ROOT / "pipeline" / "datasets" / "sp500.csv"
+PIPELINE = ROOT / "pipeline" if (ROOT / "pipeline").exists() else ROOT  # repo layout, or the course's Assignment_3/
+DEFAULT_ZIP = PIPELINE / "datasets" / "news_datasets.zip"
+DEFAULT_SP500 = PIPELINE / "datasets" / "sp500.csv"
 OUT_DIR = ROOT / "results" / "feasibility"
 FILES = ["analyst_ratings.csv", "headlines.csv"]
 

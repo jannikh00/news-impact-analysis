@@ -18,8 +18,9 @@ import pandas as pd
 import requests
 
 ROOT = Path(__file__).resolve().parents[1]
-OUT_CSV = ROOT / "pipeline" / "datasets" / "sp500.csv"
-OUT_META = ROOT / "pipeline" / "datasets" / "sp500_snapshot.json"
+PIPELINE = ROOT / "pipeline" if (ROOT / "pipeline").exists() else ROOT  # repo layout, or the course's Assignment_3/
+OUT_CSV = PIPELINE / "datasets" / "sp500.csv"
+OUT_META = PIPELINE / "datasets" / "sp500_snapshot.json"
 SOURCE_URL = "https://en.wikipedia.org/wiki/List_of_S%26P_500_companies"
 HEADERS = {"User-Agent": "news-impact-analysis/0.1 (academic research; python-requests)"}
 

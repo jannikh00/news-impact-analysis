@@ -23,7 +23,8 @@ from pathlib import Path
 import pandas as pd
 
 ROOT = Path(__file__).resolve().parents[1]
-sys.path.insert(0, str(ROOT / "pipeline"))
+PIPELINE = ROOT / "pipeline" if (ROOT / "pipeline").exists() else ROOT  # repo layout, or the course's Assignment_3/
+sys.path.insert(0, str(PIPELINE))
 from utils import DEFAULT_DATA_DIR, DEFAULT_OUT_DIR, MARKET_SYMBOL, write_json  # noqa: E402
 
 RESULTS = ROOT / "results" / "full_sample"

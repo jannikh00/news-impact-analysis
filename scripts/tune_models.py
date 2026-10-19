@@ -30,7 +30,8 @@ import numpy as np
 import pandas as pd
 
 ROOT = Path(__file__).resolve().parents[1]
-sys.path.insert(0, str(ROOT / "pipeline"))
+PIPELINE = ROOT / "pipeline" if (ROOT / "pipeline").exists() else ROOT  # repo layout, or the course's Assignment_3/
+sys.path.insert(0, str(PIPELINE))
 sys.path.insert(0, str(ROOT / "tests"))
 from conftest import load_script  # noqa: E402
 from utils import DEFAULT_OUT_DIR, TrainConfig, build_mlp, set_seed, train_mlp, write_json  # noqa: E402

@@ -22,10 +22,11 @@ from pathlib import Path
 import pandas as pd
 
 ROOT = Path(__file__).resolve().parents[1]
-sys.path.insert(0, str(ROOT / "pipeline"))
+PIPELINE = ROOT / "pipeline" if (ROOT / "pipeline").exists() else ROOT  # repo layout, or the course's Assignment_3/
+sys.path.insert(0, str(PIPELINE))
 from prepare_data import NEWS_FILES, load_universe  # noqa: E402
 
-DATASETS = ROOT / "pipeline" / "datasets"
+DATASETS = PIPELINE / "datasets"
 OUT = ROOT / "results" / "full_sample" / "ticker_identity_audit.csv"
 GENERIC = {"inc", "inc.", "corp", "corp.", "corporation", "company", "co", "co.", "the", "group", "holdings",
            "holding", "plc", "ltd", "ltd.", "trust", "international", "technologies", "&", "and", "of"}

@@ -19,7 +19,8 @@ from pathlib import Path
 import pandas as pd
 
 ROOT = Path(__file__).resolve().parents[1]
-DATASETS = ROOT / "pipeline" / "datasets"
+PIPELINE = ROOT / "pipeline" if (ROOT / "pipeline").exists() else ROOT  # repo layout, or the course's Assignment_3/
+DATASETS = PIPELINE / "datasets"
 OUT = ROOT / "results" / "feasibility" / "timestamps_aliases.json"
 RECURRING = {
     "Biggest Movers From": r"Biggest Movers From",
