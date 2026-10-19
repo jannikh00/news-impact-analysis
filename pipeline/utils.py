@@ -207,18 +207,58 @@ def parse_vectors(series):
     return np.asarray([json.loads(v) for v in series], dtype=np.float32)
 
 
-def load_vector_split(data_dir, representation):
+VECTOR_KEYS_SCHEMA = VECTORS_SCHEMA.remove_columns(["news_vector"])
+NPZ_CHECK_ROWS = 200  # CSV rows compared with the .npz copy on every load
+
+
+def load_vector_matrix(csv_path, npz_path):
+    """Keys/targets of a vector CSV and its feature matrix as float32 CSR.
+
+    The full sample's dense JSON lists need several GB once parsed, so the
+    sparse ``.npz`` copy written alongside by 2_sampling_vectorize.py is used
+    when present, after checking its shape and a random sample of rows against
+    the CSV. Without it, the CSV vectors are parsed directly.
+    """
+    import scipy.sparse as sp
+    if not Path(npz_path).exists():
+        df = load_and_validate_csv(csv_path, VECTORS_SCHEMA)
+        return df.drop(columns="news_vector"), sp.csr_matrix(parse_vectors(df["news_vector"]))
+    keys = VECTOR_KEYS_SCHEMA.validate(
+        pd.read_csv(csv_path, usecols=lambda c: c != "news_vector", dtype={"symbol": str}), lazy=True)
+    X = sp.load_npz(npz_path).tocsr().astype(np.float32)
+    if X.shape[0] != len(keys):
+        raise ValueError(f"{npz_path} has {X.shape[0]} rows, {csv_path} has {len(keys)}")
+    rows = np.sort(np.random.default_rng(SEED).choice(len(keys), min(NPZ_CHECK_ROWS, len(keys)), replace=False))
+    wanted = set(rows + 1)  # file line numbers (header is line 0)
+    sample = pd.read_csv(csv_path, usecols=["news_vector"], skiprows=lambda i: i > 0 and i not in wanted)
+    if not np.allclose(parse_vectors(sample["news_vector"]), X[rows].toarray(), rtol=1e-5, atol=1e-7):
+        raise ValueError(f"{npz_path} does not match the vectors in {csv_path}")
+    return keys, X
+
+
+def load_vector_split(data_dir, representation, artifacts_dir=None):
     """Inner-training, validation and test rows for ``dtm`` or ``tfidf``.
 
-    The validation tail is the part of the training CSV on or after the
-    ``validation.start`` date recorded by 2_sampling_vectorize.py.
+    Returns ``(frames, X, manifest)``: ``frames`` maps ``inner``/``val``/``test``
+    to DataFrames of date, symbol, IIS and MIV, and ``X`` maps the same names to
+    the matching float32 CSR feature matrices. The validation tail is the part
+    of the training CSV on or after the ``validation.start`` date recorded by
+    2_sampling_vectorize.py; ``.npz`` copies are read from ``artifacts_dir``.
     """
     data_dir = Path(data_dir)
+    artifacts_dir = Path(artifacts_dir) if artifacts_dir else DEFAULT_OUT_DIR / "artifacts"
     manifest = json.loads((data_dir / "sampling_manifest.json").read_text())
-    train = load_and_validate_csv(data_dir / f"news_{representation}_train.csv", VECTORS_SCHEMA)
-    test = load_and_validate_csv(data_dir / f"news_{representation}_test.csv", VECTORS_SCHEMA)
-    is_val = train["date"] >= manifest["validation"]["start"]
-    return train[~is_val].reset_index(drop=True), train[is_val].reset_index(drop=True), test, manifest
+    train, X_train = load_vector_matrix(data_dir / f"news_{representation}_train.csv",
+                                        artifacts_dir / f"{representation}_train.npz")
+    test, X_test = load_vector_matrix(data_dir / f"news_{representation}_test.csv",
+                                      artifacts_dir / f"{representation}_test.npz")
+    is_val = (train["date"] >= manifest["validation"]["start"]).to_numpy()
+    if is_val.any() and not is_val[np.argmax(is_val):].all():
+        raise ValueError("training rows are not sorted by date")
+    frames = {"inner": train[~is_val].reset_index(drop=True), "val": train[is_val].reset_index(drop=True),
+              "test": test.reset_index(drop=True)}
+    X = {"inner": X_train[~is_val], "val": X_train[is_val], "test": X_test}
+    return frames, X, manifest
 
 
 def top_companies_by_count(df, n=10):
@@ -244,6 +284,12 @@ class TrainConfig:
         return {k: list(v) if isinstance(v, tuple) else v for k, v in asdict(self).items()}
 
 
+# Settings chosen on the validation tail by scripts/tune_models.py (results/model_comparison/tuning_*.csv),
+# shared by the DTM and TF-IDF models of each task.
+CLASSIFY_CONFIG = TrainConfig(lr=1e-3, dropout=0.5, weight_decay=1e-4)
+REGRESS_CONFIG = TrainConfig(lr=1e-3, dropout=0.5, weight_decay=1e-5)  # grid is flat: all settings within 1%
+
+
 def set_seed(seed=SEED):
     import torch
     random.seed(seed)
@@ -262,34 +308,38 @@ def build_mlp(n_inputs, n_outputs, config):
     )
 
 
+def _dense(X):
+    """float32 tensor from a dense array or a scipy sparse matrix (densified here, batch by batch)."""
+    import torch
+    return torch.as_tensor(np.asarray(X.toarray() if hasattr(X, "toarray") else X, dtype=np.float32))
+
+
 def train_mlp(model, loss_fn, X_train, y_train, X_val, y_val, config):
     """Mini-batch Adam with early stopping; restores the best validation-loss weights.
 
-    Returns the per-epoch history as a DataFrame (epoch, train_loss, val_loss).
+    X_train/X_val may be dense arrays or scipy sparse matrices; sparse rows are
+    densified one mini-batch at a time. Returns the per-epoch history as a
+    DataFrame (epoch, train_loss, val_loss).
     """
     import torch
-    from torch.utils.data import DataLoader, TensorDataset
 
     gen = torch.Generator().manual_seed(config.seed)
-    loader = DataLoader(TensorDataset(torch.as_tensor(X_train), torch.as_tensor(y_train)),
-                        batch_size=config.batch_size, shuffle=True, generator=gen)
-    X_val, y_val = torch.as_tensor(X_val), torch.as_tensor(y_val)
+    y_train, n = torch.as_tensor(y_train), X_train.shape[0]
     opt = torch.optim.Adam(model.parameters(), lr=config.lr, weight_decay=config.weight_decay)
 
     history, best_loss, best_state, stale = [], float("inf"), None, 0
     for epoch in range(1, config.max_epochs + 1):
         model.train()
         total = 0.0
-        for xb, yb in loader:
+        for idx in torch.randperm(n, generator=gen).split(config.batch_size):
+            xb, yb = _dense(X_train[idx.numpy()]), y_train[idx]
             opt.zero_grad()
             loss = loss_fn(model(xb), yb)
             loss.backward()
             opt.step()
-            total += loss.item() * len(xb)
-        model.eval()
-        with torch.no_grad():
-            val_loss = loss_fn(model(X_val), y_val).item()
-        history.append({"epoch": epoch, "train_loss": total / len(loader.dataset), "val_loss": val_loss})
+            total += loss.item() * len(idx)
+        val_loss = float(loss_fn(torch.as_tensor(predict(model, X_val)), torch.as_tensor(y_val)))
+        history.append({"epoch": epoch, "train_loss": total / n, "val_loss": val_loss})
         if val_loss < best_loss - 1e-6:
             best_loss, stale = val_loss, 0
             best_state = {k: v.detach().clone() for k, v in model.state_dict().items()}
@@ -301,11 +351,12 @@ def train_mlp(model, loss_fn, X_train, y_train, X_val, y_val, config):
     return pd.DataFrame(history)
 
 
-def predict(model, X):
+def predict(model, X, chunk=8192):
+    """Model outputs for dense or sparse X, evaluated in chunks."""
     import torch
     model.eval()
     with torch.no_grad():
-        return model(torch.as_tensor(X)).numpy()
+        return np.concatenate([model(_dense(X[i:i + chunk])).numpy() for i in range(0, X.shape[0], chunk)])
 
 
 # --- Figures ------------------------------------------------------------------------
