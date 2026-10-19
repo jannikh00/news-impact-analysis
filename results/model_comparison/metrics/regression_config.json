@@ -1,0 +1,59 @@
+{
+  "config": {
+    "hidden": [
+      256,
+      64
+    ],
+    "dropout": 0.5,
+    "lr": 0.001,
+    "weight_decay": 1e-05,
+    "batch_size": 64,
+    "max_epochs": 100,
+    "patience": 10,
+    "seed": 42
+  },
+  "loss": "MSE on standardized MIV",
+  "optimizer": "Adam",
+  "min_company_n_for_ranked_tables": 10,
+  "runs": {
+    "dtm": {
+      "input_dim": 1000,
+      "rows": {
+        "inner": 144401,
+        "val": 16069,
+        "test": 40195
+      },
+      "epochs_run": 12,
+      "best_epoch": 2,
+      "target_scaling": {
+        "mean": -5380558.820282619,
+        "std": 1055958642.7110943,
+        "fit_on": "inner training targets"
+      },
+      "ridge": {
+        "alpha": 10.0,
+        "fit_on": "inner training + validation rows, MIV in dollars"
+      }
+    },
+    "tfidf": {
+      "input_dim": 1000,
+      "rows": {
+        "inner": 144401,
+        "val": 16069,
+        "test": 40195
+      },
+      "epochs_run": 11,
+      "best_epoch": 1,
+      "target_scaling": {
+        "mean": -5380558.820282619,
+        "std": 1055958642.7110943,
+        "fit_on": "inner training targets"
+      },
+      "ridge": {
+        "alpha": 10.0,
+        "fit_on": "inner training + validation rows, MIV in dollars"
+      }
+    }
+  },
+  "squared_error_share_of_20_largest_tfidf_errors": 0.15723891673859725
+}

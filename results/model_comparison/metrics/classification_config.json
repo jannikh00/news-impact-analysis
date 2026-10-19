@@ -1,0 +1,88 @@
+{
+  "config": {
+    "hidden": [
+      256,
+      64
+    ],
+    "dropout": 0.5,
+    "lr": 0.001,
+    "weight_decay": 0.0001,
+    "batch_size": 64,
+    "max_epochs": 100,
+    "patience": 10,
+    "seed": 42
+  },
+  "loss": "cross-entropy",
+  "optimizer": "Adam",
+  "runs": {
+    "dtm": {
+      "input_dim": 1000,
+      "rows": {
+        "inner": 144401,
+        "val": 16069,
+        "test": 40195
+      },
+      "mlp": {
+        "epochs_run": 15,
+        "best_epoch": 5
+      },
+      "mlp_weighted": {
+        "epochs_run": 12,
+        "best_epoch": 2,
+        "class_weights": {
+          "-3": 8.5596,
+          "-2": 5.0923,
+          "-1": 1.3353,
+          "0": 0.2065,
+          "1": 1.3149,
+          "2": 4.863,
+          "3": 7.7002
+        }
+      },
+      "logreg": {
+        "C": 1.0,
+        "fit_on": "inner training + validation rows",
+        "n_iter": 284
+      }
+    },
+    "tfidf": {
+      "input_dim": 1000,
+      "rows": {
+        "inner": 144401,
+        "val": 16069,
+        "test": 40195
+      },
+      "mlp": {
+        "epochs_run": 15,
+        "best_epoch": 5
+      },
+      "mlp_weighted": {
+        "epochs_run": 12,
+        "best_epoch": 2,
+        "class_weights": {
+          "-3": 8.5596,
+          "-2": 5.0923,
+          "-1": 1.3353,
+          "0": 0.2065,
+          "1": 1.3149,
+          "2": 4.863,
+          "3": 7.7002
+        }
+      },
+      "logreg": {
+        "C": 1.0,
+        "fit_on": "inner training + validation rows",
+        "n_iter": 149
+      }
+    }
+  },
+  "test_class_distribution": {
+    "-3": 787,
+    "-2": 1331,
+    "-1": 4832,
+    "0": 26558,
+    "1": 4765,
+    "2": 1206,
+    "3": 716
+  }
+}

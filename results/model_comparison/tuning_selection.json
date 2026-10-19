@@ -1,0 +1,33 @@
+{
+  "grid": {
+    "lr": [
+      0.001,
+      0.0003
+    ],
+    "dropout": [
+      0.3,
+      0.5
+    ],
+    "weight_decay": [
+      0.0,
+      1e-05,
+      0.0001
+    ]
+  },
+  "criterion": "lowest validation loss averaged over DTM and TF-IDF",
+  "vectorizers": "refit on inner-training text only",
+  "selected": {
+    "classification": {
+      "lr": 0.001,
+      "dropout": 0.5,
+      "weight_decay": 0.0001,
+      "mean_val_loss": 1.0767293572425842
+    },
+    "regression": {
+      "lr": 0.001,
+      "dropout": 0.5,
+      "weight_decay": 1e-05,
+      "mean_val_loss": 1.812391459941864
+    }
+  }
+}
