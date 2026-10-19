@@ -1,0 +1,9 @@
+,value
+train_share_up,0.15609148127375833
+train_share_down,0.1534617062379261
+train_share_extreme,0.09328846513366984
+train_events,160470.0
+test_share_up,0.16636397561885807
+test_share_down,0.17290707799477548
+test_share_extreme,0.10051001368329394
+test_events,40195.0
