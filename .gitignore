@@ -28,3 +28,4 @@ pipeline/outputs/
 pipeline/datasets/market_cap_sources.csv
 pipeline/datasets/*_manifest.json
 runs/
+pipeline/datasets/cache/
