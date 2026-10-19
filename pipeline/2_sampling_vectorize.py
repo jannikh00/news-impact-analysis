@@ -20,7 +20,8 @@
    only and applied unchanged to the test text.
 
 Writes news_{dtm,tfidf}_{train,test}.csv and sampling_manifest.json to the data
-folder, and the fitted vectorizers plus an events table to the output folder.
+folder, and the fitted vectorizers, sparse .npz copies of the matrices and an
+events table to the output folder.
 
 Usage:
     python 2_sampling_vectorize.py [--data-dir DIR] [--out-dir DIR]
@@ -32,6 +33,7 @@ from pathlib import Path
 import joblib
 import numpy as np
 import pandas as pd
+import scipy.sparse as sp
 from sklearn.feature_extraction.text import CountVectorizer, TfidfVectorizer
 
 from utils import (CAR_DAYS, DEFAULT_DATA_DIR, DEFAULT_OUT_DIR, IMPACTS_SCHEMA, NEWS_SCHEMA, SEED, TEXT_SEPARATOR,
@@ -44,7 +46,8 @@ TRAIN_SHARE = 0.8
 VALIDATION_SHARE = 0.1   # of the training events
 VECTORIZER_PARAMS = {
     "token_pattern": TOKEN_PATTERN, "lowercase": False,  # clean_text already lowercases
-    "ngram_range": (1, 2), "min_df": 5, "max_df": 0.95, "max_features": 2000,
+    "ngram_range": (1, 2), "min_df": 5, "max_df": 0.95,
+    "max_features": 1000,  # keeps the four dense-list CSVs at roughly 650 MB for the full sample
 }
 TFIDF_DECIMALS = 6
 
@@ -87,11 +90,18 @@ def build_events(news, days):
 
 
 def attach_targets(events, impacts):
-    targets = impacts.loc[impacts["IIS"].notna() & impacts["MIV"].notna(), ["symbol", "date", "IIS", "MIV"]]
+    """Join targets one-to-one; keep events with both IIS and MIV and count why the rest fail."""
+    targets = impacts[["symbol", "date", "IIS", "MIV"]]
     targets = targets.assign(event_date=pd.to_datetime(targets["date"])).drop(columns="date")
-    joined = events.merge(targets, on=["symbol", "event_date"], how="left", validate="one_to_one")
-    has_target = joined["IIS"].notna()
-    return joined[has_target].reset_index(drop=True), int((~has_target).sum())
+    joined = events.merge(targets, on=["symbol", "event_date"], how="left", validate="one_to_one",
+                          indicator=True)
+    no_price = joined["_merge"].eq("left_only")
+    no_iis = ~no_price & joined["IIS"].isna()
+    no_miv = ~no_price & joined["IIS"].notna() & joined["MIV"].isna()
+    reasons = {"no_price_row_for_event_date": int(no_price.sum()), "iis_undefined": int(no_iis.sum()),
+               "miv_missing_market_cap": int(no_miv.sum())}
+    keep = joined["IIS"].notna() & joined["MIV"].notna()
+    return joined[keep].drop(columns="_merge").reset_index(drop=True), reasons
 
 
 def first_date_reaching(dates, share):
@@ -162,12 +172,14 @@ def vectorize(train_text, test_text):
     return out
 
 
-def vector_frame(events, matrix, decimals):
-    dense = matrix.toarray()
+def vector_frame(events, matrix, decimals, chunk=5000):
+    vectors = []
+    for start in range(0, matrix.shape[0], chunk):  # densify in chunks to bound memory
+        vectors += [format_vector(row, decimals) for row in matrix[start:start + chunk].toarray().tolist()]
     return pd.DataFrame({
         "date": events["event_date"].dt.strftime("%Y-%m-%d").values,
         "symbol": events["symbol"].values,
-        "news_vector": [format_vector(row, decimals) for row in dense],
+        "news_vector": vectors,
         "IIS": events["IIS"].astype(int).values,
         "MIV": events["MIV"].values,
     })[VECTOR_COLUMNS]
@@ -203,6 +215,8 @@ def main():
         write_validated_csv(vector_frame(train, X_train, decimals), args.data_dir / f"news_{name}_train.csv", VECTORS_SCHEMA)
         write_validated_csv(vector_frame(test, X_test, decimals), args.data_dir / f"news_{name}_test.csv", VECTORS_SCHEMA)
         joblib.dump(vec, artifacts / f"{name}_vectorizer.joblib")
+        sp.save_npz(artifacts / f"{name}_train.npz", X_train)  # compact copies, same row order as the CSVs
+        sp.save_npz(artifacts / f"{name}_test.npz", X_test)
     events.drop(columns=["n_event_dates"], errors="ignore").to_csv(artifacts / "events.csv", index=False)
 
     params = {k: list(v) if isinstance(v, tuple) else v for k, v in VECTORIZER_PARAMS.items()}
