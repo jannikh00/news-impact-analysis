@@ -1,0 +1,17 @@
+stage,rows,dropped,note
+raw news rows (both files),3252887,0,
+after reused-ticker exclusions,3235035,17852,ticker_exclusions.csv
+in S&P 500 universe (after aliases),656815,2578220,snapshot + ticker_aliases.csv
+valid date,656815,0,drops 1969-12-31 placeholder
+not market-research spam,655123,1692,
+after exact duplicates,651913,3210,
+articles in news.csv,645913,6000,after same-day headline duplicates
+articles mapped to a trading day,645913,0,
+calendar-day bundles,325570,320343,"same company, same New York date"
+company-day events,309527,16043,weekend/holiday bundles merged into next session
+events with a price row,308332,1195,"no Yahoo price on the event date (pre-listing, delisted dates)"
+events with IIS,307435,897,insufficient history / incomplete window / zero variability
+events with IIS and MIV,307435,0,common sample
+inside the sampled period,201437,105998,2012-01-01 .. 2018-12-31
+CAR window inside period,201178,259,
+final sample (train + test),200665,513,boundary-crossing training events removed

@@ -1,0 +1,139 @@
+{
+  "seed": 42,
+  "start_year_candidates": [
+    2009,
+    2010,
+    2011,
+    2012,
+    2013,
+    2014
+  ],
+  "selected_start_year": 2012,
+  "period": {
+    "calendar": [
+      "2012-01-01",
+      "2018-12-31"
+    ],
+    "trading_days": [
+      "2012-01-03",
+      "2018-12-31"
+    ]
+  },
+  "train": {
+    "start": "2012-01-03",
+    "end": "2018-01-11"
+  },
+  "validation": {
+    "start": "2017-07-06",
+    "end": "2018-01-11",
+    "inner_train_end": "2017-07-05"
+  },
+  "test": {
+    "start": "2018-01-12",
+    "end": "2018-12-31"
+  },
+  "split_method": "chronological by whole event dates; 80% boundary by event count (observations), validation tail = last 10% of training events by count",
+  "event_window_rule": "all 3 CAR trading days must lie inside the event's own period",
+  "actual_coverage": {
+    "first_event": "2012-01-03",
+    "last_event": "2018-12-27"
+  },
+  "events": {
+    "articles": 645913,
+    "articles_beyond_calendar": 0,
+    "articles_empty_after_cleaning": 6,
+    "calendar_day_bundles": 325570,
+    "mixed_session_bundles": 121,
+    "events": 309527,
+    "events_merging_several_calendar_days": 13679,
+    "events_without_valid_targets": {
+      "no_price_row_for_event_date": 1195,
+      "iis_undefined": 897,
+      "miv_missing_market_cap": 0
+    },
+    "events_with_targets": 307435
+  },
+  "partition_counts": {
+    "inner_train": 144401,
+    "excluded_outside_period": 105998,
+    "test": 40195,
+    "validation": 16069,
+    "excluded_window_crosses_test": 324,
+    "excluded_window_beyond_period": 259,
+    "excluded_window_crosses_validation": 189
+  },
+  "rows": {
+    "train": 160470,
+    "test": 40195,
+    "validation": 16069
+  },
+  "symbols": {
+    "train": 352,
+    "test": 360
+  },
+  "text_separator": " | ",
+  "vectorizer_params": {
+    "token_pattern": "\\b[a-z][a-z-]+\\b",
+    "lowercase": false,
+    "ngram_range": [
+      1,
+      2
+    ],
+    "min_df": 5,
+    "max_df": 0.95,
+    "max_features": 1000
+  },
+  "tfidf_decimals": 6,
+  "vocabulary_size": 1000,
+  "test_rows_with_empty_vector": 70,
+  "audit": {
+    "symbols_in_snapshot": 503,
+    "symbols_with_articles": 389,
+    "symbols_with_sample_events": 361,
+    "symbols_with_test_events": 360,
+    "symbols_without_price_history": [
+      "EXE",
+      "SNDK"
+    ],
+    "sample_events": 200665,
+    "sample_cap_source_share": {
+      "sec_shares": 0.9328,
+      "yf_shares": 0.034,
+      "ratio": 0.0332
+    },
+    "sample_mixed_session_events": 2,
+    "sample_median_headlines_per_event": 1.0,
+    "sample_iis_distribution": {
+      "train": {
+        "-3": 0.0173,
+        "-2": 0.0285,
+        "-1": 0.1077,
+        "0": 0.6904,
+        "1": 0.1086,
+        "2": 0.0292,
+        "3": 0.0183
+      },
+      "test": {
+        "-3": 0.0196,
+        "-2": 0.0331,
+        "-1": 0.1202,
+        "0": 0.6607,
+        "1": 0.1185,
+        "2": 0.03,
+        "3": 0.0178
+      }
+    },
+    "top10_test_companies": {
+      "AVGO": 220,
+      "GILD": 219,
+      "D": 216,
+      "MDT": 209,
+      "KMI": 208,
+      "SPG": 208,
+      "LUV": 206,
+      "LOW": 203,
+      "REGN": 203,
+      "KR": 199
+    }
+  }
+}
